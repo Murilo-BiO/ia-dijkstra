@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Trabalho IA ADSMA6</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="app.css" />
+    </head>
+    <body class="body">
+
+        <div class="container">
+            <div class="box" id="a">
+                <div class="w-75">
+                    <h1 class="box-title">Título</h1>
+                
+                    <form class="form" method="GET">
+                        <select type="number"
+                            id="form-box"
+                            placeholder="Colunas"
+                            v-model="dadosGrafo.colunas">
+                            <option :value="i" v-for="i of [1, 2, 3, 4, 5, 6]" :key="i">{{ i }}</option>
+                        </select>
+                        <button class="button" type="button" @click="gerarGrafo" v-if="!grafo">Gerar grafo</button>
+                        <button class="button" type="button" @click="resetarGrafo">reset</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="box" id="b">
+                <div>
+                    <h3 class="box-title">Grafo</h3>
+                    <canvas id="screen"></canvas>
+                </div>
+            </div>
+            <div class="box" id="c">
+                <div class="w-75">
+                    <h3 class="box-title">Resultado</h3>
+                </div>
+            </div>
+            <div class="box" id="d">
+                <div class="w-100">
+                    <h3 class="box-title">Matriz de Adjacência</h3>
+                    <pre v-html="matriz" class="code"></pre>
+                </div>
+            </div>
+        </div>
+        <script type="module">
+            import { main } from './main.js'
+    
+            const screen = document.querySelector('#screen')
+    
+            main(screen).catch(console.error)
+        </script>
+    </body>
+</html>
+
