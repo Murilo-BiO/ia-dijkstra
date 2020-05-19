@@ -120,6 +120,9 @@ export class Grafo {
         const matriz = []
         const names = Object.keys(this.vertices)
 
+        if (names.length < 1)
+            return matriz
+
         const getRow = (remaining) => {
             const [ ignored, ...cols ] = remaining
 
@@ -146,14 +149,14 @@ export class Grafo {
             return matriz.map((row, idx) => {
 
                 row = [...spaces, ...row]
-                row.unshift(idx === 0 ? ' ' : names[idx - 1])
+                row.unshift(idx === 0 ? '-' : names[idx - 1])
                 if (idx > 0)
-                    spaces.push(' ')
+                    spaces.push('-')
                 return row.map(item => {
-                    return item === Math.SQRT2 ? ' √2 ' : `  ${item} `
-                }).join('')
+                    return item === Math.SQRT2 ? '√2' : `${item}`
+                })
 
-            }).join('\n')
+            })
         }
 
         return matriz

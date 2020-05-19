@@ -2,99 +2,128 @@ import Vue from './vue.js'
 import { Grafo } from './Grafo.js'
 import { Screen } from './Screen.js'
 import { Input } from './Input.js'
-
+import { Dijkstra } from './Dijkstra.js'
+import { Dij } from './Dij.js'
 
 
 /**
- * Tela para display do grafo
- * 
- * @param {HTMLCanvasElement} screen Referência do canvas
+ * Função principal de execução e controle da aplicação
  */
-export const main = async (canvas) => {
-    const shared = {
-        dadosGrafo: {
-            colunas: 2,
-            linhas: 3,
-            colunasMin: 2,
-            colunasMax: 6,
+export const main = async () => {
+    const app = new Vue({
+        el: '#app',
+        data: {
+            form: {
+                colunas: 2,
+                start: 'a',
+                end: 'a'
+            },
+            result: {
+                caminho: [],
+                peso: 0
+            },
+            grafo: {},
+            screen: {},
+            input: {},
+            dijkstra: {},
+            matriz: []
         },
-        grafo: null,
-        screen: null,
-        input: null,
-        matriz: ''
-    }
-    
-    const boxA = new Vue({
-        el: '#a',
-        data: shared,
-        created () {
+        mounted () {
+            this.grafo = new Grafo (3, this.form.colunas)
+            this.dijkstra = new Dijkstra(this.grafo)
             this.input = new Input
+            this.screen = new Screen({
+                grafo: this.grafo,
+                input: this.input,
+                screen: this.$refs['screen'],
+            })
+
+            this.screen.render(requestAnimationFrame)
+            this.atualizaMatriz(requestAnimationFrame)
+        },
+        computed: {
+            distanciaManhattan () {
+                if (!this.grafo || !this.grafo.vertices)
+                    return '-'
+                const start = this.grafo.vertices[this.form.start]
+                const end = this.grafo.vertices[this.form.end]
+
+                return Math.abs((start.pos.x - end.pos.x) + (start.pos.y - end.pos.y))
+            }
         },
         methods: {
-            gerarGrafo () {
-                this.validarInput()
-                this.grafo = new Grafo(this.dadosGrafo.linhas, this.dadosGrafo.colunas)
-                console.log(this.grafo.vertices.a)
-                this.renderizarGrafo()
-            },
-            validarInput () {
-                const max = Math.max(this.dadosGrafo.colunas, this.dadosGrafo.colunasMin)
-                this.dadosGrafo.colunas = Math.min(max, this.dadosGrafo.colunasMax)
-            },
-            renderizarGrafo () {
-                if (!this.input)
-                    return console.log('Não configurou input')
+            setColunas (e) {
+                const value = e.target.value
 
-                this.screen = new Screen({
-                    screen: canvas,
-                    grafo: this.grafo,
-                    input: this.input
-                })
-
+                if (value < 2 || value > 6)
+                    return
+                
+                this.form.colunas = value
+                
+                // Para o render, corrige as variáveis, recomeça o render
+                this.screen.lock()
+                this.screen.clear()
+                this.grafo.colunas = this.form.colunas
+                this.resetarArestas()
+                this.screen.unlock()
+                this.screen.resize()
                 this.screen.render(requestAnimationFrame)
             },
-            resetarGrafo () {
-                this.grafo = null
-                this.colunas = undefined
-                this.screen.clear()
-                this.screen = null
+            setDijkstraInput (type, e) {
+                const value = e.target.value
+                if (!(value in this.grafo.vertices))
+                    return
+                
+                this.form[type] = value
+            },
+            runDijkstra () {
+                const verticeInicial = this.grafo.vertices[this.form.start]
+                const verticeFinal = this.grafo.vertices[this.form.end]
+
+                const melhorCaminho = this.dijkstra.melhorCaminho(verticeInicial, verticeFinal)
+
+                this.result = melhorCaminho
+            },
+            /**
+             * Desfaz as arestas no grafo e reseta
+             * os vértices de Início e Fim no formulário
+             */
+            resetarArestas () {
+                this.grafo.reset()
+                this.form.start = 'a'
+                this.form.end = 'a'
+                this.result.caminho = []
+                this.result.peso = 0
+            },
+            /**
+             * A cada frame, atualiza a matriz na tela
+             */
+            atualizaMatriz (requestAnimationFrame) {
+                this.matriz = this.grafo.matriz(true)
+                requestAnimationFrame(() => {
+                    this.atualizaMatriz(requestAnimationFrame)
+                })
+            },
+            /**
+             * Pega as classes para estilização do item da matriz
+             * 
+             * @param {string} item Item da matriz de adjacência
+             * @param {number} idx Índice do item na linha da matriz
+             */
+            getClasses (item, idx) {
+                return {
+                    'text-blue text-bold': !['-', '0'].includes(item) && idx !== 0,
+                    'text-invisible': item === '-',
+                    'text-bold': idx === 0
+                }
             }
         }
     })
-
-    const boxC = new Vue({
-        el: '#c',
-        data: shared,
-        computed: {
-            
-        }
-    })
-    const boxD = new Vue({
-        el: '#d',
-        data: shared,
-        created () {
-            this.getMatrix(requestAnimationFrame)
-        },
-        methods: {
-            getMatrix (requestAnimationFrame) {
-                if (this.grafo)
-                    this.matriz = this.grafo.matriz(true).replace(/\n/g, '<br>')
-
-                if (requestAnimationFrame)
-                    requestAnimationFrame(() => {
-                        this.getMatrix(requestAnimationFrame)
-                    })
-            }
-        }
-    })
+    window.app = app
 
 
+    const grafo = app.grafo
+    const d = new Dij
 
-    // const grafo = new Grafo(3, 3)
-    // const screen = new Screen({
-    //     screen: canvas,
-    //     input: new Input,
-    //     grafo,
-    // })
-    // screen.render(requestAnimationFrame)
+
 }

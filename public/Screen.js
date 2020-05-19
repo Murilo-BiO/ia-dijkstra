@@ -14,6 +14,9 @@ export class Screen {
     /** @type {import('./Input').Input} */
     input = null
 
+    /** @type {Function} */
+    listener = () => {}
+
     estiloDoGrafo = {
         raio: 15,
         raioHover: 15 * 1.1, // 10% maior
@@ -22,8 +25,8 @@ export class Screen {
         aresta: {
             larguraDaLinha: '5',
             larguraDaLinhaHover: '10',
-            cor: '#000',
-            corHover: '#555',
+            cor: '#4169e1',
+            corHover: '#00f',
             estiloDoMouse: 'default',
             estiloDoMouseHover: 'pointer',
         },
@@ -32,12 +35,17 @@ export class Screen {
             alinhamentoDoTexto: 'center',
             linhaBaseDoTexto: 'middle',
             corDoTexto: '#000',
+            corDoTextoHover: '#000',
+            corDoTextoSemArestas: '#aaa',
             fonteDoTexto: '15px Verdana',
             estiloDoMouse: 'default',
             estiloDoMouseHover: 'pointer',
+            corDoCirculo: '#000',
+            corDoCirculoHover: '#000',
+            corDoCirculoSemArestas: '#aaa',
             corDoVertice: '#fff',
-            corDoVerticeHover: '#efefef',
-            corDoVerticeSemArestas: '#c7d2f0'
+            corDoVerticeHover: 'cyan',
+            corDoVerticeSemArestas: '#efefef'
         },
 
     }
@@ -53,7 +61,7 @@ export class Screen {
         return this._selecionado
     }
 
-    constructor ({ screen, style = {}, grafo, input }) {
+    constructor ({ screen, style = {}, grafo, input, listener }) {
         this.grafo = grafo
 
         this.cvs = screen
@@ -65,6 +73,8 @@ export class Screen {
         
         this.input = input
         this.input.register(this.cvs)
+
+        this.listener = listener
     }
 
     clear () {
@@ -112,8 +122,7 @@ export class Screen {
 
             // se não achou target de vértice, vê se tem aresta
             const viewed = []
-            for (const key in this.grafo.vertices) {
-                const v = this.grafo.vertices[key]
+            for (const v of Object.values(this.grafo.vertices).reverse()) {
                 
                 if (Object.keys(v.arestas).length < 1)
                     continue
@@ -127,7 +136,7 @@ export class Screen {
                     
                         
                     this.ctx.beginPath()
-                    this.ctx.lineWidth = this.estiloDoGrafo.aresta.larguraDaLinha
+                    this.ctx.lineWidth = this.estiloDoGrafo.aresta.larguraDaLinhaHover
                     vx = this.estiloDoGrafo.margem + a.vertices[0].pos.x * this.estiloDoGrafo.distancia
                     vy = this.estiloDoGrafo.margem + a.vertices[0].pos.y * this.estiloDoGrafo.distancia
                     this.ctx.moveTo(vx, vy)
@@ -183,8 +192,8 @@ export class Screen {
         }
 
         
-        const hover = hoverTarget()
         clickTarget()
+        const hover = hoverTarget()
 
         // Limpa o canvas
         this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height)
@@ -193,7 +202,7 @@ export class Screen {
         const drawed = []
         const pos = { x: 0 + this.estiloDoGrafo.margem, y: 0 + this.estiloDoGrafo.margem }
         Object.values(this.grafo.vertices)
-            .map(v => {
+            .forEach(v => {
                 let x, y
 
                 // Arestas primeiro para que não atrapalhe o Vértice
@@ -227,21 +236,32 @@ export class Screen {
                 }
 
                 const style = this.estiloDoGrafo.vertice
-                let radius, cor, pointer
+                let radius, cor, pointer, corCirculo, corTexto
 
                 if (hover && hover.target === v || this.selecionado == v) {
                     radius = this.estiloDoGrafo.raioHover
                     cor = style.corDoVerticeHover
+                    corCirculo = style.corDoCirculoHover
+                    corTexto = style.corDoTextoHover
                 } else {
                     radius = this.estiloDoGrafo.raio
                     cor = style.corDoVertice
+                    corCirculo = style.corDoCirculo
+                    corTexto = style.corDoTexto
+                }
+
+                if (Object.keys(v.arestas).length < 1) {
+                    cor = style.corDoVerticeSemArestas
+                    corCirculo = style.corDoCirculoSemArestas
+                    corTexto = style.corDoCirculoSemArestas
                 }
 
                 x = pos.x + v.pos.x * this.estiloDoGrafo.distancia
                 y = pos.y + v.pos.y * this.estiloDoGrafo.distancia
                 this.ctx.beginPath()
+                this.ctx.strokeStyle = corCirculo
                 this.ctx.arc(x, y, radius, 0, Math.PI * 2, false)
-                this.ctx.fillStyle = Object.keys(v.arestas).length > 0 ? cor : style.corDoVerticeSemArestas
+                this.ctx.fillStyle = cor
                 this.ctx.lineWidth = style.larguraDaLinha
                 this.ctx.fill()
                 this.ctx.stroke()
@@ -250,13 +270,16 @@ export class Screen {
                 this.ctx.font = style.fonteDoTexto
                 this.ctx.textAlign = style.alinhamentoDoTexto
                 this.ctx.textBaseline = style.linhaBaseDoTexto
-                this.ctx.fillStyle = style.corDoTexto
+                this.ctx.fillStyle = corTexto
                 this.ctx.fillText(v.name, x, y)
 
                 // Se pelo menos um item estiver com hover, o cursor deve ser ser pointer
                 pointer = hover ? style.estiloDoMouseHover : style.estiloDoMouse
                 this.cvs.style.cursor = pointer
             })
+
+        if (this.listener && typeof this.listener === 'function')
+            this.listener(Math.random() * 10000000)
 
         if (requestAnimationFrame) {
             requestAnimationFrame(() => {

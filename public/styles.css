@@ -1,0 +1,262 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+Chettan+2&display=swap');
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+*:before, *:after {
+    box-sizing: inherit;
+}
+
+html, body {
+    width: 100vw;
+    height: 100vh;
+    font-family: 'Baloo Chettan 2';
+}
+
+.bg-gray {
+    background: #dfdfdf;
+}
+
+.fh {
+    height: 100%;
+}
+
+.fw {
+    width: 100%;
+}
+
+.flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.flex-column > :not(:first-child) {
+    margin-top: 1em;
+}
+
+.container {
+    padding: 5em 20rem;
+}
+
+.card {
+    width: 100%;
+    background: white;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: space-around;
+    border-radius: 5px;
+}
+
+.card > div {
+    width: 100%;
+    padding: 2em 0;
+    height: 100%;
+    display: inline-block;
+    margin-right: 1em;
+}
+
+.card > div:first-child {
+    margin-left: 2em;
+}
+
+.card > div:last-child {
+    margin-right: 2em;
+}
+
+.title {
+    margin-bottom: 10px;
+}
+
+.inline {
+    display: inline-block;
+}
+
+.fields > .inline:not(:first-child) {
+    margin-left: 1.5em;
+}
+
+.field {
+    margin-bottom: 10px;
+}
+
+label {
+    display: block;
+}
+
+dl {
+    display: flex;
+    flex-flow: row wrap;
+}
+dt {
+    flex-basis: 50%;
+    padding: 2px 4px;
+    /* text-align: right; */
+}
+dd {
+    flex-basis: 50%;
+    flex-grow: 1;
+    margin: 0;
+    padding: 2px 4px;
+}
+
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: .25rem .75rem;
+    height: 2.5rem;
+    border-radius: 4px;
+    min-width: 5em;
+    border-color: #ddd;
+    background-color: transparent;
+    font-family: 'Baloo Chettan 2';
+    font-size: 1rem;
+}
+
+.select {
+    display: flex;
+    max-width: fit-content;
+    position: relative;
+    justify-content: space-between;
+    align-items: center;
+    /*Don't really need this just for demo styling*/
+    min-width: 5em;
+}
+
+.select:after {
+    content: '>';
+    font: 17px "Consolas", monospace;
+    color: #777;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+    right: .75rem;
+    /*Adjust for position however you want*/
+    
+    padding: 0px;
+    /*left line */
+    font-weight: bold;
+    position: absolute;
+    pointer-events: none;
+}
+
+select:active, select:focus {
+    border: 1px solid #bbb;
+    outline: 0 none;
+}
+
+button {
+    height: 2.5rem;
+    padding: .25rem .75rem;
+    font-family: 'Baloo Chettan 2';
+    font-size: 1rem;
+    background: eee;
+    border-radius: 4px;
+    border: 1px #ddd solid;
+    text-decoration: none;
+    min-width: 5em;
+    cursor: pointer;
+}
+
+button:hover:not(:active) {
+    background: #eee;
+}
+
+button:active, button:focus {
+    outline: 0 none;
+}
+
+button:active {
+    background: #ddd;
+}
+
+.v-name {
+    font-weight: bold;
+}
+.grafo, .matriz {
+    display: flex;
+    min-height: 400px;
+    min-width: 450;
+    border: 1px #ddd solid;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.grafo {
+    justify-content: center;
+    align-items: center;
+}
+
+.matriz {
+    padding: 2rem 0;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.matriz > thead, .matriz > tbody {
+    width: 100%;
+}
+
+/* .matriz > thead {
+    margin-bottom: 1.5rem;
+} */
+
+.matriz > thead > tr {
+    width: 100%;
+    display: flex;
+    flex: 1 1 auto;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+}
+
+.matriz > tbody > tr {
+    width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+}
+
+.matriz tr {
+    height: 100%;
+}
+
+.matriz th, .matriz td {
+    height: 100%;
+    text-align: center;
+    min-width: 20px;
+    min-height: 20px;
+}
+
+.matriz > tbody {
+    height: 100%;
+    flex-grow: 1;
+    margin-top: 0 !important;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-around;
+}
+
+.text-blue {
+    color: #4169e1;
+}
+
+.text-bold {
+    font-weight: bold;
+}
+
+.text-invisible {
+    color: transparent;
+}
+
+.half-wrapper {
+    max-width: 50%;
+}

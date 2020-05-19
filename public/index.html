@@ -1,56 +1,124 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Trabalho IA ADSMA6</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="app.css" />
-    </head>
-    <body class="body">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inteligência Artificial - Implementação do Algorítmo de Dijkstra</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <main class="fh fw bg-gray flex flex-column container" id="app">
+        <section class="card flex">
+            <!-- Aqui terá os inputs e resultados -->
+            <div>
+                <!-- Left -->
+                <h1 class="title">Construção do Grafo</h1>
 
-        <div class="container">
-            <div class="box" id="a">
-                <div class="w-75">
-                    <h1 class="box-title">Título</h1>
+                <div class="fields">
+                    <div class="field">
+                        <label>Número de Colunas</label>
+                        <div class="select">
+                            <select min="2" max="6" :value="form.colunas" @input="setColunas">
+                                <option v-for="num of [2, 3, 4, 5, 6]"
+                                    :value="num"
+                                    :key="`colunas_${num}`"
+                                    >{{ num }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="button" @click="resetarArestas">Resetar Arestas</button>
+                </div>
+            </div>
+
+            <div>
+                <!-- Rigth -->
+                <h1 class="title">Algoritmo de Dijkstra</h1>
+
+                <div class="fields">
+                    <div class="field inline">
+                        <label>Vértice Inicial</label>
+                        <div class="select">
+                            <select :value="form.start" @input="setDijkstraInput('start', $event)">
+                                <option v-for="(val, name) in grafo.vertices"
+                                    :value="name"
+                                    :key="`start_${name}`">{{ name }}</option>
+                            </select>
+                        </div>
+                    </div>
+    
+                    <div class="field inline">
+                        <label>Vértice Final</label>
+                        <div class="select">
+                            <select :value="form.end" @input="setDijkstraInput('end', $event)">
+                                <option v-for="(val, name) in grafo.vertices"
+                                    :value="name"
+                                    :key="`end_${name}`">{{ name }}</option>
+                            </select>
+                        </div>
+                    </div>
+    
+                    <div class="field">
+                        <button type="button" @click="runDijkstra">Executar</button>
+                    </div>
+                </div>
+
                 
-                    <form class="form" method="GET">
-                        <select type="number"
-                            id="form-box"
-                            placeholder="Colunas"
-                            v-model="dadosGrafo.colunas">
-                            <option :value="i" v-for="i of [1, 2, 3, 4, 5, 6]" :key="i">{{ i }}</option>
-                        </select>
-                        <button class="button" type="button" @click="gerarGrafo" v-if="!grafo">Gerar grafo</button>
-                        <button class="button" type="button" @click="resetarGrafo">reset</button>
-                    </form>
+            </div>
+            <div>
+                <h1 class="title">Resultados</h3>
+                <p>
+                    <dl>
+                        <dt><b>Sequência dos Vértices:</b></dt>
+                        <dd v-if="result === null">Não há caminho entre os vértices informados.</dd>
+                        <dd v-else v-text="result.caminho.join(', ') || '-'"></dd>
+
+                        <dt><b>Distância Real:</b></dt>
+                        <dd v-text="result ? result.peso : '-'"></dd>
+
+                        <dt><b>Distância Manhattan:</b></dt>
+                        <dd v-text="distanciaManhattan"></dd>
+                    </dl>
+                </p>
+            </div>
+        </section>
+
+        <section class="card flex">
+            <!-- Aqui terá o Grafo e a Matriz de Adjacência -->
+            <div class="half-wrapper">
+                <!-- Grafo -->
+                <h1 class="title">Grafo Interativo</h1>
+                <div class="grafo flex">
+                    <canvas class="screen" id="screen" ref="screen"></canvas>
                 </div>
             </div>
 
-            <div class="box" id="b">
-                <div>
-                    <h3 class="box-title">Grafo</h3>
-                    <canvas id="screen"></canvas>
-                </div>
+            <div class="half-wrapper">
+                <!-- Matriz -->
+                <h1 class="title">Matriz de Adjacência</h1>
+                <table class="matriz flex-column">
+                    <thead v-if="matriz && matriz.length > 0">
+                        <tr>
+                            <th v-for="(val, idx) in matriz[0]"
+                                :class="{ 'text-invisible': idx === 0 }"
+                                :key="idx">{{ val }}</th>
+                        </tr>
+                    </thead>
+                    <tbody v-if="matriz && matriz.length > 0">
+                        <tr v-for="(linha, idxLinha) in matriz.filter((r, i) => i !== 0)">
+                            <td v-for="(item, idx) in linha"
+                                :class="getClasses(item, idx)"
+                                :key="`${idxLinha}_${idx}`">{{ item }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="box" id="c">
-                <div class="w-75">
-                    <h3 class="box-title">Resultado</h3>
-                </div>
-            </div>
-            <div class="box" id="d">
-                <div class="w-100">
-                    <h3 class="box-title">Matriz de Adjacência</h3>
-                    <pre v-html="matriz" class="code"></pre>
-                </div>
-            </div>
-        </div>
-        <script type="module">
-            import { main } from './main.js'
-    
-            const screen = document.querySelector('#screen')
-    
-            main(screen).catch(console.error)
-        </script>
-    </body>
+        </section>
+    </main>
+    <script type="module">
+        import { main } from './main.js'
+
+        main().catch(console.error)
+    </script>
+</body>
 </html>
-
