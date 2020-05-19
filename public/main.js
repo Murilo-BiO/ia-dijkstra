@@ -3,7 +3,6 @@ import { Grafo } from './Grafo.js'
 import { Screen } from './Screen.js'
 import { Input } from './Input.js'
 import { Dijkstra } from './Dijkstra.js'
-import { Dij } from './Dij.js'
 
 
 /**
