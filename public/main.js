@@ -119,11 +119,4 @@ export const main = async () => {
             }
         }
     })
-    window.app = app
-
-
-    const grafo = app.grafo
-    const d = new Dij
-
-
 }
