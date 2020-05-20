@@ -23,10 +23,14 @@ export class Screen {
         distancia: 70,
         margem: 40,
         aresta: {
-            larguraDaLinha: '5',
+            larguraDaLinha: '2',
             larguraDaLinhaHover: '10',
-            cor: '#4169e1',
-            corHover: '#00f',
+            larguraDaLinhaDestaque: '5',
+
+            cor: '#777',
+            corHover: '#000',
+            corDestaque: '#00f',
+            
             estiloDoMouse: 'default',
             estiloDoMouseHover: 'pointer',
         },
@@ -34,32 +38,39 @@ export class Screen {
             larguraDaLinha: '1',
             alinhamentoDoTexto: 'center',
             linhaBaseDoTexto: 'middle',
-            corDoTexto: '#000',
+            fonteDoTexto: '15px Verdana',
+
+            corDoTexto: '#777',
             corDoTextoHover: '#000',
             corDoTextoSemArestas: '#aaa',
-            fonteDoTexto: '15px Verdana',
+            corDoTextoDestaque: '#00f',
+
             estiloDoMouse: 'default',
             estiloDoMouseHover: 'pointer',
-            corDoCirculo: '#000',
+            
+            corDoCirculo: '#777',
             corDoCirculoHover: '#000',
             corDoCirculoSemArestas: '#aaa',
+            corDoCirculoDestaque: '#00f',
+            
             corDoVertice: '#fff',
             corDoVerticeHover: 'cyan',
-            corDoVerticeSemArestas: '#efefef'
+            corDoVerticeSemArestas: '#efefef',
+            corDoVerticeDestaque: '#fff'
         },
 
     }
 
+    /**
+     * Array com o nome dos vértices destacados
+     * que representam um caminho
+     * 
+     * @type {string[]}
+     */
+    destacados = []
+
     /** @type {import('./Grafo').Vertice}*/
-    _selecionado = null
-
-    set selecionado (v) {
-        this._selecionado = v
-    }
-
-    get selecionado () {
-        return this._selecionado
-    }
+    selecionado = null
 
     constructor ({ screen, style = {}, grafo, input, listener }) {
         this.grafo = grafo
@@ -79,7 +90,19 @@ export class Screen {
 
     clear () {
         this.lock()
+        this.destacados = []
         this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height)
+    }
+
+    /**
+     * Define a propriedade `destacados`
+     * @param {string[]} destacados Array de vértices pertencentes ao caminho destacado
+     */
+    definirDestacados (destacados) {
+        if (!destacados || destacados.constructor.name !== 'Array')
+            return
+
+        this.destacados = destacados
     }
 
     resize () {
@@ -169,6 +192,15 @@ export class Screen {
                     }
                     break
                 case 'aresta':
+                    if (target.vertices.length > 1) {
+                        const [ va, vb ] = target.vertices
+
+                        // vai remover uma aresta que está no caminho destacado
+                        // Reseta o caminho
+                        if (this.destacados.includes(va.name) && this.destacados.includes(vb.name))
+                            this.destacados = []
+                    }
+
                     // Click na aresta irá removê-la
                     this.grafo.desconectar(target)
                     this.selecionado = null
@@ -190,7 +222,6 @@ export class Screen {
             
             return result
         }
-
         
         clickTarget()
         const hover = hoverTarget()
@@ -213,9 +244,9 @@ export class Screen {
                     if (drawed.includes(a))
                         continue
 
+                    this.ctx.beginPath()
                     x = pos.x + a.vertices[0].pos.x * this.estiloDoGrafo.distancia
                     y = pos.y + a.vertices[0].pos.y * this.estiloDoGrafo.distancia
-                    this.ctx.beginPath()
                     this.ctx.moveTo(x, y)
                     x = pos.x + a.vertices[1].pos.x * this.estiloDoGrafo.distancia
                     y = pos.y + a.vertices[1].pos.y * this.estiloDoGrafo.distancia
@@ -229,11 +260,21 @@ export class Screen {
                         this.ctx.lineWidth = style.larguraDaLinha
                         this.cvs.style.cursor = style.estiloDoMouse
                     }
+
+                    if (a.vertices.length > 1) {
+                        const [ va, vb ] = a.vertices
+
+                        if (this.destacados.includes(va.name) && this.destacados.includes(vb.name)) {
+                            this.ctx.strokeStyle = style.corDestaque
+                            this.ctx.lineWidth = style.larguraDaLinhaDestaque
+                        }
+                    }
+
                     this.ctx.stroke()
                     this.ctx.closePath()
-
                     drawed.push(a)
                 }
+
 
                 const style = this.estiloDoGrafo.vertice
                 let radius, cor, pointer, corCirculo, corTexto
@@ -254,6 +295,10 @@ export class Screen {
                     cor = style.corDoVerticeSemArestas
                     corCirculo = style.corDoCirculoSemArestas
                     corTexto = style.corDoCirculoSemArestas
+                } else if (this.destacados.includes(v.name)) {
+                    cor = style.corDoVerticeDestaque
+                    corCirculo = style.corDoCirculoDestaque
+                    corTexto = style.corDoTextoDestaque
                 }
 
                 x = pos.x + v.pos.x * this.estiloDoGrafo.distancia

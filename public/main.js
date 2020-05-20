@@ -28,7 +28,25 @@ export const main = async () => {
             matriz: []
         },
         mounted () {
-            this.grafo = new Grafo (3, this.form.colunas)
+            const grafoAlterado = (e, a)=> {
+                if (!a || !this.result)
+                    return
+                
+                const [ va, vb ] = a.vertices
+                const verticesOtimos = this.result.caminho.includes(va.name) && this.result.caminho.includes(vb.name)
+
+                if (e === 'conectou') {
+                    if (verticesOtimos)
+                        this.runDijkstra()
+
+                } else if (e === 'desconectou') {
+    
+                    if (verticesOtimos)
+                        this.resetarResultado()
+                }
+            }
+
+            this.grafo = new Grafo (3, this.form.colunas, grafoAlterado)
             this.dijkstra = new Dijkstra(this.grafo)
             this.input = new Input
             this.screen = new Screen({
@@ -81,7 +99,17 @@ export const main = async () => {
 
                 const melhorCaminho = this.dijkstra.melhorCaminho(verticeInicial, verticeFinal)
 
+                if (melhorCaminho) {
+                    this.screen.definirDestacados(melhorCaminho.caminho)
+                }
+
                 this.result = melhorCaminho
+            },
+            resetarResultado () {
+                this.form.start = 'a'
+                this.form.end = 'a'
+                this.result.caminho = []
+                this.result.peso = 0
             },
             /**
              * Desfaz as arestas no grafo e reseta
@@ -89,10 +117,7 @@ export const main = async () => {
              */
             resetarArestas () {
                 this.grafo.reset()
-                this.form.start = 'a'
-                this.form.end = 'a'
-                this.result.caminho = []
-                this.result.peso = 0
+                this.resetarResultado()
             },
             /**
              * A cada frame, atualiza a matriz na tela

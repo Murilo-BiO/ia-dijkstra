@@ -33,9 +33,15 @@ export class Grafo {
     /** @type {number} */
     colunas = 6
 
-    constructor (linhas, colunas) {
+    /** @type {Function} */
+    changeListener = () => {}
+
+    constructor (linhas, colunas, onChange = null) {
         this.linhas = linhas
         this.colunas = colunas
+
+        if (onChange  && typeof onChange === 'function')
+            this.changeListener = onChange
 
         this.init()
     }
@@ -59,6 +65,8 @@ export class Grafo {
         for (const prop in this.vertices)
             delete this.vertices[prop]
         
+        
+        this.changeListener('resetou')
         this.init()
     }
 
@@ -89,6 +97,7 @@ export class Grafo {
         else
             w = Math.SQRT2 // Diagonal
 
+        // TODO: Criar classe de aresta
         const aresta = {
             peso: w,
             vertices: [ va, vb ]
@@ -96,6 +105,7 @@ export class Grafo {
 
         va.arestas[b] = vb.arestas[a] = aresta
 
+        this.changeListener('conectou', aresta)
         return true
     }
 
@@ -111,6 +121,8 @@ export class Grafo {
                     delete v.arestas[a]
             }
         }
+        
+        this.changeListener('desconectou', aresta)
     }
 
     /**
