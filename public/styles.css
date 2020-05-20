@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Baloo+Chettan+2&display=swap');
 
+/* Reset */
 * {
     margin: 0;
     box-sizing: border-box;
@@ -8,14 +9,23 @@
 *:before, *:after {
     box-sizing: inherit;
 }
+/* End Reset */
 
+
+/* Set the Viewport */
 html, body {
     width: 100vw;
     height: 100vh;
     font-family: 'Baloo Chettan 2';
 }
+/* End Viewport Settings */
 
+/* Helpers */
 .bg-gray {
+    background: #dfdfdf;
+}
+
+.bg-main {
     background: #dfdfdf;
 }
 
@@ -27,10 +37,15 @@ html, body {
     width: 100%;
 }
 
+.v-name {
+    font-weight: bold;
+}
+
 .flex {
     display: flex;
     justify-content: center;
-    align-items: center;
+    flex: 1 1 auto;
+    /* align-items: center; */
 }
 
 .flex-column {
@@ -41,53 +56,79 @@ html, body {
     margin-top: 1em;
 }
 
-.container {
-    padding: 5em 20rem;
+.text-blue {
+    color: #4169e1;
 }
 
-.card {
-    width: 100%;
-    background: white;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: space-around;
-    border-radius: 5px;
+.text-bold {
+    font-weight: bold;
 }
 
-.card > div {
-    width: 100%;
-    padding: 2em 0;
-    height: 100%;
-    display: inline-block;
-    margin-right: 1em;
+.text-invisible {
+    color: transparent;
 }
 
-.card > div:first-child {
-    margin-left: 2em;
+.half-wrapper {
+    max-width: 50%;
 }
 
-.card > div:last-child {
-    margin-right: 2em;
-}
-
-.title {
-    margin-bottom: 10px;
+.half-wrapper.flex {
+    align-items: stretch;
 }
 
 .inline {
     display: inline-block;
 }
 
-.fields > .inline:not(:first-child) {
-    margin-left: 1.5em;
+.overflow-v {
+    overflow-y: auto;
+}
+/* End Helpers */
+
+/* Layout */
+.container {
+    display: flex;
+    /* padding: 5em 20rem; */
+    padding-bottom: 5em;
+    padding-top: 5em;
+    flex-direction: column;
+    align-items: space-around;
+    /* justify-content: space-around; */
+    flex: 1 1 auto;
 }
 
-.field {
+.container > :first-child {
+    margin-top: auto;
+}
+
+.container > :last-child {
+    margin-bottom: auto;
+}
+
+.container > :not(:first-child) {
+    margin-top: 1em;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    /* Small Display */
+}
+
+@media (min-width: 1024px) and (max-width: 1199px)  {
+    /* Medium Display */
+}
+
+@media (min-width: 1200px) {
+    /* Large Display */
+    .container {
+        padding-left: 20rem;
+        padding-right: 20rem;
+    }
+}
+
+
+
+.title {
     margin-bottom: 10px;
-}
-
-label {
-    display: block;
 }
 
 dl {
@@ -105,8 +146,37 @@ dd {
     margin: 0;
     padding: 2px 4px;
 }
+/* End Layout */
 
+/* Card */
+.card {
+    width: 100%;
+    background: #f7fafc;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.1);
+}
 
+.card > div {
+    width: 100%;
+    padding: 2em 0;
+    height: 100%;
+    display: inline-block;
+    margin-right: 1em;
+}
+
+.card > div:first-child {
+    margin-left: 2em;
+}
+
+.card > div:last-child {
+    margin-right: 2em;
+}
+/* End Card */
+
+/* Form */
 select {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -140,10 +210,7 @@ select {
     -ms-transform: rotate(90deg);
     transform: rotate(90deg);
     right: .75rem;
-    /*Adjust for position however you want*/
-    
     padding: 0px;
-    /*left line */
     font-weight: bold;
     position: absolute;
     pointer-events: none;
@@ -179,11 +246,24 @@ button:active {
     background: #ddd;
 }
 
-.v-name {
-    font-weight: bold;
+.fields > .inline:not(:first-child) {
+    margin-left: 1.5em;
 }
+
+.field {
+    margin-bottom: 10px;
+}
+
+label {
+    display: block;
+}
+/* End Form */
+
+/* Grafo e Matriz */
 .grafo, .matriz {
+    padding: 1rem 1rem;
     display: flex;
+    flex: 1 1 auto;
     min-height: 400px;
     min-width: 450;
     border: 1px #ddd solid;
@@ -197,18 +277,17 @@ button:active {
 }
 
 .matriz {
-    padding: 2rem 0;
     justify-content: space-around;
     align-items: center;
+}
+
+.matriz * {
+    padding: 0;
 }
 
 .matriz > thead, .matriz > tbody {
     width: 100%;
 }
-
-/* .matriz > thead {
-    margin-bottom: 1.5rem;
-} */
 
 .matriz > thead > tr {
     width: 100%;
@@ -234,6 +313,7 @@ button:active {
     text-align: center;
     min-width: 20px;
     min-height: 20px;
+    max-height: 20px;
 }
 
 .matriz > tbody {
@@ -244,19 +324,4 @@ button:active {
     flex-flow: column nowrap;
     justify-content: space-around;
 }
-
-.text-blue {
-    color: #4169e1;
-}
-
-.text-bold {
-    font-weight: bold;
-}
-
-.text-invisible {
-    color: transparent;
-}
-
-.half-wrapper {
-    max-width: 50%;
-}
+/* End Grafo e Matriz */
