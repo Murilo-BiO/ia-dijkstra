@@ -108,8 +108,7 @@ export const main = async () => {
             resetarResultado () {
                 this.form.start = 'a'
                 this.form.end = 'a'
-                this.result.caminho = []
-                this.result.peso = 0
+                this.result = null
             },
             /**
              * Desfaz as arestas no grafo e reseta
