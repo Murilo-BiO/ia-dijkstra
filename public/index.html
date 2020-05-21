@@ -37,25 +37,27 @@
                 <h1 class="title">Algoritmo de Dijkstra</h1>
 
                 <div class="fields">
-                    <div class="field inline">
-                        <label>Vértice Inicial</label>
-                        <div class="select">
-                            <select :value="form.start" @input="setDijkstraInput('start', $event)">
-                                <option v-for="(val, name) in grafo.vertices"
-                                    :value="name"
-                                    :key="`start_${name}`">{{ name }}</option>
-                            </select>
+                    <div class="fields horizontal">
+                        <div class="field inline">
+                            <label>Vértice Inicial</label>
+                            <div class="select">
+                                <select :value="form.start" @input="setDijkstraInput('start', $event)">
+                                    <option v-for="(val, name) in grafo.vertices"
+                                        :value="name"
+                                        :key="`start_${name}`">{{ name }}</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-    
-                    <div class="field inline">
-                        <label>Vértice Final</label>
-                        <div class="select">
-                            <select :value="form.end" @input="setDijkstraInput('end', $event)">
-                                <option v-for="(val, name) in grafo.vertices"
-                                    :value="name"
-                                    :key="`end_${name}`">{{ name }}</option>
-                            </select>
+        
+                        <div class="field inline">
+                            <label>Vértice Final</label>
+                            <div class="select">
+                                <select :value="form.end" @input="setDijkstraInput('end', $event)">
+                                    <option v-for="(val, name) in grafo.vertices"
+                                        :value="name"
+                                        :key="`end_${name}`">{{ name }}</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
     
@@ -90,7 +92,7 @@
             <div class="half-wrapper flex">
                 <!-- Grafo -->
                 <h1 class="title">Grafo Interativo</h1>
-                <div class="grafo flex">
+                <div class="grafo">
                     <canvas class="screen" id="screen" ref="screen"></canvas>
                 </div>
             </div>
