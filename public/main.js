@@ -65,7 +65,7 @@ export const main = async () => {
                 const start = this.grafo.vertices[this.form.start]
                 const end = this.grafo.vertices[this.form.end]
 
-                return Math.abs((start.pos.x - end.pos.x) + (start.pos.y - end.pos.y))
+                return Math.abs(Math.abs((start.pos.x - end.pos.x)) + Math.abs((start.pos.y - end.pos.y)))
             }
         },
         methods: {
